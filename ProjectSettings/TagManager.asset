@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Projectile
+  - SoundEffect
   layers:
   - Default
   - TransparentFX
@@ -38,6 +40,24 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: BG
+    uniqueID: 2330751343
+    locked: 0
+  - name: Shadows
+    uniqueID: 3104931065
+    locked: 0
+  - name: GrappleLine
+    uniqueID: 1198186471
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: ExplosionEffect
+    uniqueID: 4272174543
+    locked: 0
+  - name: Swing
+    uniqueID: 3916535813
+    locked: 0
+  - name: UI
+    uniqueID: 1138993643
     locked: 0
