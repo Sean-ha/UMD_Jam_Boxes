@@ -17,6 +17,8 @@ public class ScoreManager : MonoBehaviour
 
 	public int pointAmount { get; set; }
 
+	// If true, can't get any more points
+	private bool pointsLocked;
 
 	private void Awake()
 	{
@@ -38,6 +40,9 @@ public class ScoreManager : MonoBehaviour
 
 	public void GainPoints(int amount)
 	{
+		if (pointsLocked)
+			return;
+
 		pointAmount += amount;
 
 		UpdateTotalScoreUI();
@@ -88,5 +93,25 @@ public class ScoreManager : MonoBehaviour
 	private void UpdateTotalScoreUI()
 	{
 		totalScoreText.text = pointAmount.ToString("D8");
+	}
+
+	public void ResetScore()
+	{
+		pointsLocked = false;
+		pointAmount = 0;
+		UpdateTotalScoreUI();
+	}
+
+	// Returns whether this was a new best high score or not
+	public bool OnDeath()
+	{
+		pointsLocked = true;
+		int overallHighScore = PlayerPrefs.GetInt("HighScore", 0);
+		if (pointAmount > overallHighScore)
+		{
+			PlayerPrefs.SetInt("HighScore", pointAmount);
+			return true;
+		}
+		return false;
 	}
 }

@@ -5,6 +5,8 @@ using UnityEngine;
 public class AttackManager : MonoBehaviour
 {
 	public GameObject attackObject;
+	// Need a separate flipped object or else shader doesn't work...
+	public GameObject attackObjectFlipped;
 	public float boxHitForce;
 	public float enemyHitForce;
 	public float attackCooldown;
@@ -37,7 +39,12 @@ public class AttackManager : MonoBehaviour
 		float dangle = HelperFunctions.GetDAngleTowards(transform.position, mousePos);
 		Vector2 direction = HelperFunctions.GetDirectionTowards(transform.position, mousePos);
 
-		GameObject swing = Instantiate(attackObject, (Vector2)transform.position + (direction * distanceFromPlayer), 
+		GameObject swing;
+		if (flipSwing)
+			swing = Instantiate(attackObjectFlipped, (Vector2)transform.position + (direction * distanceFromPlayer),
+			Quaternion.Euler(new Vector3(0, 0, dangle)));
+		else
+			swing = Instantiate(attackObject, (Vector2)transform.position + (direction * distanceFromPlayer), 
 			Quaternion.Euler(new Vector3(0, 0, dangle)));
 		swing.transform.parent = transform;
 

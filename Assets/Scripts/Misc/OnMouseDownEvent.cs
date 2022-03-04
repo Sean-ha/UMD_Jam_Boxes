@@ -7,8 +7,13 @@ public class OnMouseDownEvent : MonoBehaviour
 {
 	public UnityEvent onMouseDown;
 
+	public bool disabled { get; set; }
+
 	private void OnMouseDown()
 	{
+		if (disabled)
+			return;
+
 		onMouseDown.Invoke();
 	}
 

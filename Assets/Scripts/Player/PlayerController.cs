@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
 	public Animator animator;
 	public float movementSpeed;
 	public Transform spriteTransform;
+	public GameObject shadowObject;
 
 	private Rigidbody2D rb;
 	private AttackManager attackManager;
@@ -27,12 +28,16 @@ public class PlayerController : MonoBehaviour
 
 	private Vector2 velocityOffset = Vector2.zero;
 
+	private Vector2 startingPos;
 
 	private void Awake()
 	{
 		rb = GetComponent<Rigidbody2D>();
 		attackManager = GetComponent<AttackManager>();
 		grappleManager = GetComponent<GrappleManager>();
+		startingPos = transform.position;
+
+		gameObject.SetActive(false);
 	}
 
 	private void Update()
@@ -77,17 +82,6 @@ public class PlayerController : MonoBehaviour
 		}
 
 		animator.SetBool("isMoving", (horizontal != 0 || vertical != 0));
-
-#if UNITY_EDITOR
-		if (Input.GetKeyDown(KeyCode.LeftShift))
-		{
-			Time.timeScale = 4f;
-		}
-		else if (Input.GetKeyUp(KeyCode.LeftShift))
-		{
-			Time.timeScale = 1f;
-		}
-#endif
 	}
 
 	private void FixedUpdate()
@@ -134,6 +128,7 @@ public class PlayerController : MonoBehaviour
 				ObjectCreator.instance.CreateExpandingExplosion(transform.position, Quaternion.identity, Constants.lightColor, 1f, explosionDuration: 0.2f, large: true);
 				ObjectCreator.instance.CreateObject(Tag.PlayerDeathParticles, transform.position, Quaternion.identity);
 				spriteTransform.gameObject.SetActive(false);
+				shadowObject.SetActive(false);
 
 				SoundManager.instance.PlaySound(SoundManager.Sound.BalloonPop);
 			});
@@ -143,12 +138,10 @@ public class PlayerController : MonoBehaviour
 
 	public void SetupPlayer()
 	{
-		ObjectCreator.instance.CreateExpandingExplosion(transform.position, Quaternion.identity, Constants.lightColor, 1f, explosionDuration: 0.2f, large: true);
-		ObjectCreator.instance.CreateObject(Tag.PlayerDeathParticles, transform.position, Quaternion.identity);
-
-		SoundManager.instance.PlaySound(SoundManager.Sound.Explosion);
-
-		gameObject.SetActive(true);
-
+		transform.position = startingPos;
+		disabled = false;
+		rb.isKinematic = false;
+		spriteTransform.gameObject.SetActive(true);
+		shadowObject.SetActive(true);
 	}
 }

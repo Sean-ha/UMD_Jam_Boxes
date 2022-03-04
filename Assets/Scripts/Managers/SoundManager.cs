@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class SoundManager : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class SoundManager : MonoBehaviour
       // PlayerDeath = 7,
       BalloonPop = 8,
       Explosion = 9,
+      ButtonHover = 10,
    }
 
    [System.Serializable]
@@ -29,12 +31,20 @@ public class SoundManager : MonoBehaviour
       public int quantity = 5;
    }
 
+   public AudioSource bgmSource;
+   public AudioClip menuTheme;
+   public AudioClip battleTheme;
+
    public List<SoundAudioClip> sounds;
 
    private Dictionary<Sound, Queue<AudioSource>> dict;
    private Dictionary<Sound, bool> canPlayDict;
 
+
    private float sfxVolume = 0.20f;
+   private float bgmVolume = 0.20f;
+
+
 
    private void Awake()
    {
@@ -50,8 +60,8 @@ public class SoundManager : MonoBehaviour
       }
    }
 
-   // Each sound gets one object with multiple AudioSource components
-   private void InitializeDictionary()
+	// Each sound gets one object with multiple AudioSource components
+	private void InitializeDictionary()
    {
       dict = new Dictionary<Sound, Queue<AudioSource>>();
       canPlayDict = new Dictionary<Sound, bool>();
@@ -120,5 +130,39 @@ public class SoundManager : MonoBehaviour
       yield return null;
 
       canPlayDict[sound] = true;
+   }
+
+   public void ChangeSFXVolume(float vol)
+	{
+      sfxVolume = vol;
+   }
+
+   public void ChangeBGMVolume(float vol)
+	{
+      bgmVolume = vol;
+      bgmSource.volume = vol;
+	}
+
+   public void PlayMenuTheme()
+	{
+      // Fade in:
+      DOTween.To(() => 0f, (float val) => bgmSource.volume = val, bgmVolume, 3.0f);
+
+      bgmSource.clip = menuTheme;
+      bgmSource.Play();
+	}
+
+   public void PlayBattleTheme()
+   {
+      // Fade in:
+      DOTween.To(() => 0f, (float val) => bgmSource.volume = val, bgmVolume, 3.0f);
+
+      bgmSource.clip = battleTheme;
+      bgmSource.Play();
+   }
+
+   public void FadeOutBgm(float fadeDuration)
+	{
+      DOTween.To(() => bgmSource.volume, (float val) => bgmSource.volume = val, 0f, fadeDuration);
    }
 }

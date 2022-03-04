@@ -6,6 +6,7 @@ using DG.Tweening;
 public class Box : MonoBehaviour
 {
 	public Transform mySprite;
+	public ParticleSystem boxHitParticles;
 
 	private Rigidbody2D rb;
 
@@ -20,11 +21,18 @@ public class Box : MonoBehaviour
 	private bool isStreaking;
 	private float minStreakDuration;
 
+	private Vector2 startingPos;
+
+	// If true, box will not kill anything more
+	public bool dead { get; set; }
 
 	private void Awake()
 	{
 		rb = GetComponent<Rigidbody2D>();
 		squisherLayer = LayerMask.GetMask("Wall", "Box", "Enemy");
+		startingPos = transform.position;
+
+		gameObject.SetActive(false);
 	}
 
 	private void Update()
@@ -101,6 +109,11 @@ public class Box : MonoBehaviour
 		return grapple != null;
 	}
 
+	public void SetupBox()
+	{
+		transform.position = startingPos;
+	}
+
 	private void OnCollisionEnter2D(Collision2D collision)
 	{
 		if (rb.velocity.magnitude < 1.5f)
@@ -116,7 +129,7 @@ public class Box : MonoBehaviour
 	private void OnCollisionStay2D(Collision2D collision)
 	{
 		// Speed threshold of squishing stuff
-		if (rb.velocity.magnitude < 1.5f)
+		if (rb.velocity.magnitude < 1.5f || dead)
 			return;
 
 		if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
@@ -126,18 +139,16 @@ public class Box : MonoBehaviour
 
 			if (collision.collider.Raycast(direction, hits, collision.gameObject.GetComponent<Enemy>().GetDistanceToEdge(rangle) + 0.2f, squisherLayer) != 0)
 			{
-				ObjectCreator.instance.CreateExpandingExplosion(collision.transform.position, Quaternion.identity, Constants.lightColor, 1f);
-				ObjectCreator.instance.CreateObject(Tag.EnemyDeathParticles, collision.transform.position, Quaternion.identity);
-				
 				// Create score
 				Vector2 topOfEnemy = (Vector2)collision.transform.position + new Vector2(0, collision.gameObject.GetComponent<BoxCollider2D>().size.y);
 				currentStreak++;
 				int thisStreakCount = ScoreManager.instance.CreateScoreText(currentStreak, topOfEnemy);
 
-				Destroy(collision.gameObject);
 				SoundManager.instance.PlaySoundPitch(SoundManager.Sound.EnemyDeath, 0.6f + thisStreakCount * 0.06f);
 				StatsManager.instance.totalEnemiesKilled++;
 				StatsManager.instance.CheckLargestKillStreak(currentStreak);
+
+				collision.gameObject.GetComponent<Enemy>().KillThisEnemy();
 			}
 
 			// Vector2 destination = (Vector2)collision.transform.position + (direction * (collision.gameObject.GetComponent<Enemy>().GetDistanceToEdge(rangle) + 0.2f));

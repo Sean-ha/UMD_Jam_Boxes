@@ -47,8 +47,11 @@ public class GrappleManager : MonoBehaviour
 				GameObject createdGrapple = Instantiate(grappleObject, transform.position, Quaternion.identity);
 				createdGrapple.GetComponent<Grapple>().StartBoxGrapple(this, box, transform.position, boxPullSpeed, debugVal);
 				currGrapples--;
+
+				SoundManager.instance.PlaySound(SoundManager.Sound.BoxHit);
 			}
 		}
+		/* Wall grapple
 		else if (results[0].transform.gameObject.layer == LayerMask.NameToLayer("Wall"))
 		{
 			Vector2 wallPos = results[0].point;
@@ -56,6 +59,7 @@ public class GrappleManager : MonoBehaviour
 			GameObject createdGrapple = Instantiate(grappleObject, transform.position, Quaternion.identity);
 			createdGrapple.GetComponent<Grapple>().StartWallGrapple(pc, wallPos, playerPullSpeed);
 		}
+		*/
 
 
 		/*

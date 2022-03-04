@@ -50,4 +50,12 @@ public class Enemy : MonoBehaviour
 			flasher.InitiateWhiteFlash();
 		}
 	}
+
+	public void KillThisEnemy()
+	{
+		ObjectCreator.instance.CreateExpandingExplosion(transform.position, Quaternion.identity, Constants.lightColor, 1f);
+		ObjectCreator.instance.CreateObject(Tag.EnemyDeathParticles, transform.position, Quaternion.identity);
+
+		Destroy(gameObject);
+	}
 }

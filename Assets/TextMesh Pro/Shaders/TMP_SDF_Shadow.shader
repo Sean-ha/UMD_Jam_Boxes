@@ -179,7 +179,7 @@ Shader "TextMeshPro/Distance Field And Shadow" {
 
 						fixed4 frag(v2f IN) : SV_Target
 						{
-							fixed4 c = SampleSpriteTexture(IN.texcoord) * IN.color;
+							fixed4 c = SampleSpriteTexture(IN.texcoord);
 							c.rgb *= c.a;
 							return c;
 						}

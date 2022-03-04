@@ -11,12 +11,18 @@ public class HealthSystem : MonoBehaviour
 	[Tooltip("Duration the player will be invincible after taking damage (seconds)")]
 	public float invincibilityTime;
 
+	private FlashWhite fw;
+
 	private bool isInvincible;
 
 	private int maxHealth;
 	// currentHealth-1 gives index in hearts list of current heart
 	private int currentHealth;
 
+	private void Awake()
+	{
+		fw = mySpriteRenderer.GetComponent<FlashWhite>();
+	}
 
 	private void Start()
 	{
@@ -33,7 +39,6 @@ public class HealthSystem : MonoBehaviour
 		if (currentHealth == 0)
 		{
 			// Die
-			TimeManager.instance.canPause = false;
 			// SoundManager.instance.PlaySound(SoundManager.Sound.PlayerDeath);
 			GetComponent<PlayerController>().OnDeath();
 
@@ -53,6 +58,16 @@ public class HealthSystem : MonoBehaviour
 		hearts[currentHealth - 1].sprite = filledHeart;
 	}
 
+	public void OnStartGame()
+	{
+		for (int i = 0; i < hearts.Count; i++)
+		{
+			hearts[i].sprite = filledHeart;
+		}
+
+		currentHealth = maxHealth;
+	}
+
 	private void OnCollisionStay2D(Collision2D collision)
 	{
 		if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
@@ -64,6 +79,7 @@ public class HealthSystem : MonoBehaviour
 				return;
 
 			// Take damage
+			fw.InitiateWhiteFlash(0.3f);
 
 			DecreaseHealth();
 

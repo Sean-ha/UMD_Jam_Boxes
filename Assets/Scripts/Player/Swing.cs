@@ -17,14 +17,6 @@ public class Swing : MonoBehaviour
 		this.boxSwingForce = boxSwingForce;
 		this.enemyHitForce = enemyHitForce;
 		this.direction = direction;
-		
-		// Flip swing if necessary
-		if (isFlipped)
-		{
-			Vector2 scale = transform.localScale;
-			scale.y = -scale.y;
-			transform.localScale = scale;
-		}
 	}
 
 	private void OnTriggerEnter2D(Collider2D collision)
@@ -36,6 +28,8 @@ public class Swing : MonoBehaviour
 			// Vector2 direction = HelperFunctions.GetDirectionTowards(player.position, pointOnBox);
 
 			collision.GetComponent<Box>().PushBox(pointOnBox, direction, boxSwingForce);
+			ObjectCreator.instance.CreateObject(Tag.EnemyDeathParticles, pointOnBox, Quaternion.identity);
+			ObjectCreator.instance.CreateExpandingExplosion(pointOnBox, Quaternion.identity, Constants.lightColor, 1f);
 			SoundManager.instance.PlaySound(SoundManager.Sound.BoxHit, volumeDelta: 0.1f);
 		}
 		else if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
